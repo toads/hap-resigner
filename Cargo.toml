@@ -1,0 +1,84 @@
+[package]
+name = "hap-resigner"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.95"
+description = "Cross-platform HarmonyOS HAP resigner"
+license = "MIT OR Apache-2.0"
+default-run = "hap-resigner"
+
+[lib]
+name = "hap_resigner"
+path = "src/lib.rs"
+
+[[bin]]
+name = "hap-resigner"
+path = "src/main.rs"
+
+[[bin]]
+name = "hap-resigner-cli"
+path = "src/bin/hap-resigner-cli.rs"
+
+[features]
+default = []
+agc = ["dep:open", "dep:reqwest", "dep:url"]
+inline-hdc = ["dep:hdc-host-inline"]
+app = [
+    "agc",
+    "inline-hdc",
+    "dep:directories",
+    "dep:eframe",
+    "dep:keyring",
+    "dep:rfd",
+]
+
+[dependencies]
+atomic-write-file = "0.3.1"
+base64 = "0.22"
+clap = { version = "4.6.6", features = ["derive"] }
+cms = { version = "=0.2.3", features = ["builder", "pem"] }
+const-oid = "0.9"
+der = { version = "0.7", features = ["alloc", "derive", "oid", "pem"] }
+directories = { version = "6", optional = true }
+eframe = { version = "0.36.1", default-features = false, features = ["accesskit", "default_fonts", "glow", "links", "persistence"], optional = true }
+hdc-host-inline = { path = "vendor/hdc/host", optional = true }
+keyring = { version = "4.2.0", default-features = false, features = ["v1"], optional = true }
+open = { version = "5", optional = true }
+p12-keystore = "0.3.1"
+p256 = { version = "0.13", features = ["ecdsa", "pem", "pkcs8"] }
+pem = "3"
+p384 = { version = "0.13", features = ["ecdsa", "pkcs8"] }
+rand = "0.9"
+reqwest = { version = "0.13.4", default-features = false, features = ["blocking", "json", "multipart", "query", "rustls", "system-proxy"], optional = true }
+rcgen = "0.14.10"
+rfd = { version = "0.17.2", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = { version = "0.10", features = ["oid"] }
+signature = "2"
+thiserror = "2"
+time = { version = "0.3", features = ["formatting", "parsing", "serde"] }
+url = { version = "2", optional = true }
+x509-cert = { version = "0.2", features = ["builder", "pem"] }
+zip = { version = "6.0.0", default-features = false, features = ["deflate"] }
+
+
+[dev-dependencies]
+parking_lot = "0.12"
+tempfile = "3"
+rustls = "0.23"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.test]
+debug = 0
+incremental = false
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

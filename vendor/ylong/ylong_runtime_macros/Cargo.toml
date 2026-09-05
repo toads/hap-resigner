@@ -1,0 +1,11 @@
+[package]
+name = "ylong_runtime_macros"
+version = "1.0.0"
+edition = "2021"
+description = "Ylong_runtime Procedure Macro"
+license = "Apache-2.0"
+repository = "https://gitcode.com/openharmony/commonlibrary_rust_ylong_runtime"
+keywords = ["Ylong", "Runtime", "Procedure", "Macro"]
+
+[lib]
+proc-macro = true

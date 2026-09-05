@@ -1,0 +1,22 @@
+[package]
+name = "hdc-host-inline"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+[features]
+default = ["host"]
+host = []
+
+[lib]
+path = "../src/host/lib.rs"
+
+[dependencies]
+hdc = { path = "..", features = ["host"] }
+humantime = "2"
+lazy_static = "1"
+libc = "0.2"
+log = "0.4"
+openssl = { version = "0.10", features = ["vendored"] }
+ylong_runtime_static = { package = "ylong_runtime", path = "../../ylong/ylong_runtime", features = ["full"] }

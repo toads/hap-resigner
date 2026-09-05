@@ -1,0 +1,26 @@
+[package]
+name = "ylong_io"
+version = "1.0.0"
+edition = "2021"
+description = "Event Driven IO"
+license = "Apache-2.0"
+repository = "https://gitcode.com/openharmony/commonlibrary_rust_ylong_runtime"
+keywords = ["ylong", "io", "epoll"]
+
+[features]
+default = ["tcp", "udp"]
+udp = []
+tcp = []
+
+[dependencies]
+libc = "0.2.134"
+
+[[example]]
+name = "ylong_io_tcp_client"
+path = "examples/ylong_io_tcp_client.rs"
+required-features = ["tcp"]
+
+[[example]]
+name = "ylong_io_tcp_server"
+path = "examples/ylong_io_tcp_server.rs"
+required-features = ["tcp"]

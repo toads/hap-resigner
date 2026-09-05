@@ -1,0 +1,27 @@
+[package]
+name = "hdc"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+build = "build.rs"
+
+[features]
+default = ["host"]
+emulator = []
+host = []
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+humantime = "2"
+libc = "0.2"
+log = "0.4"
+openssl = { version = "0.10", features = ["vendored"] }
+libusb1-sys = { version = "0.7", features = ["vendored"] }
+lz4-sys = "1.11"
+ylong_runtime_static = { package = "ylong_runtime", path = "../ylong/ylong_runtime", features = ["full"] }
+
+[build-dependencies]
+cc = "1"

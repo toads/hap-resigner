@@ -1,0 +1,13 @@
+[package]
+name = "ylong_signal"
+version = "1.0.0"
+edition = "2021"
+description = "ylong_runtime signal syscall wrapping"
+license = "Apache-2.0"
+repository = "https://gitcode.com/openharmony/commonlibrary_rust_ylong_runtime"
+keywords = ["Ylong", "signal"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc = "0.2.134"

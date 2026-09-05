@@ -1,0 +1,4 @@
+repository=https://gitcode.com/openharmony/developtools_hdc.git
+commit=c9bb0e3a20554995847983bca558f6c6c36ebad5
+path=hdc_rust/src
+license=Apache-2.0

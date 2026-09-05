@@ -1,0 +1,79 @@
+name: Windows Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-2025
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      CRT_STATIC: "TRUE"
+      CARGO_TARGET_DIR: target
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Resolve Cargo package version
+        env:
+          RELEASE_REF_TYPE: ${{ github.ref_type }}
+          RELEASE_REF_NAME: ${{ github.ref_name }}
+        run: |
+          $metadata = cargo metadata --locked --no-deps --format-version 1 | ConvertFrom-Json
+          $version = ($metadata.packages | Where-Object name -eq "hap-resigner").version
+          if (-not $version) {
+            throw "Unable to determine hap-resigner package version from Cargo metadata"
+          }
+          if ($env:RELEASE_REF_TYPE -eq "tag" -and $env:RELEASE_REF_NAME -ne "v$version") {
+            throw "Release tag '$env:RELEASE_REF_NAME' does not match Cargo package version 'v$version'"
+          }
+          "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Install native build prerequisites
+        run: choco install nasm strawberryperl -y --no-progress
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Test core and integrations
+        run: cargo test --locked --features app
+
+      - name: Test coexistence with an existing HDC server
+        run: cargo test --locked --manifest-path vendor/hdc/host/Cargo.toml prefers_an_existing_external_hdc_server_on_a_different_port
+
+      - name: Build release application
+        run: cargo build --locked --release --features app
+
+      - name: Run console CLI selftest
+        run: .\target\release\hap-resigner-cli.exe --selftest
+
+      - name: Create portable archive
+        run: |
+          $artifactBase = "HAP-Resigner-v$env:PACKAGE_VERSION-windows-x64"
+          $portableDir = Join-Path dist $artifactBase
+          $archive = "$portableDir.zip"
+          New-Item -ItemType Directory -Force $portableDir | Out-Null
+          Copy-Item target\release\hap-resigner.exe $portableDir
+          Copy-Item target\release\hap-resigner-cli.exe $portableDir
+          Compress-Archive -Path "$portableDir\*" -DestinationPath $archive -Force
+          $archiveName = Split-Path $archive -Leaf
+          (Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() + "  $archiveName" | Set-Content "$archive.sha256" -NoNewline
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: HAP-Resigner-v${{ env.PACKAGE_VERSION }}-windows-x64
+          path: |
+            dist/HAP-Resigner-v${{ env.PACKAGE_VERSION }}-windows-x64.zip
+            dist/HAP-Resigner-v${{ env.PACKAGE_VERSION }}-windows-x64.zip.sha256
+          if-no-files-found: error

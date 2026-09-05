@@ -1,0 +1,190 @@
+[package]
+name = "ylong_runtime"
+version = "1.0.0"
+edition = "2021"
+description = "Runtime Environment"
+license = "Apache-2.0"
+repository = "https://gitcode.com/openharmony/commonlibrary_rust_ylong_runtime"
+keywords = ["ylong", "runtime", "executor"]
+
+[features]
+default = []
+
+full = [
+    "net",
+    "multi_instance_runtime",
+    "current_thread_runtime",
+    "signal",
+    "sync",
+    "time",
+    "process",
+    "fs",
+    "macros",
+]
+
+ffrt_full = [
+    "net",
+    "signal",
+    "sync",
+    "time",
+    "process",
+    "fs",
+    "ffrt",
+    "macros",
+]
+
+# This feature controls the executor type runs below the runtime.
+# If turned off, ffrt executor will be selected.
+# If turned on, ylong executor will be selected.
+ffrt = ["ylong_ffrt"]
+
+# This feature controls whether the runtime is singleton.
+# If turned on, there could be mulitple executors running with their own thread pool.
+multi_instance_runtime = []
+
+# This controls whether to enable the functionality to turn the current thread into a single-thread runtime.
+current_thread_runtime = []
+
+# Async file io components
+fs = ["sync"]
+
+# Coroutine synchronization components (mutex, channel, etc.)
+sync = []
+
+# Timer component
+time = []
+
+# Async IO components
+net = ["ylong_io/tcp", "ylong_io/udp"]
+
+# Signal component
+signal = ["ylong_signal", "net", "sync"]
+
+# Macro components
+macros = ["ylong_runtime_macros"]
+
+# Metrics component
+metrics = []
+
+# Process component
+process = ["signal"]
+
+[dependencies]
+libc = "0.2.134"
+ylong_signal = { path = "../ylong_signal", optional = true }
+ylong_io = { path = "../ylong_io", optional = true }
+ylong_ffrt = { path = "../ylong_ffrt", optional = true }
+ylong_runtime_macros = { path = "../ylong_runtime_macros", optional = true }
+
+[dev-dependencies]
+tokio = { version = "1.25", features = ["full"] }
+
+[package.metadata.doc.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docrs"]
+
+[[bench]]
+name = "ylong_tokio_mutex"
+path = "benches/ylong_tokio_mutex.rs"
+required-features = ["sync"]
+
+[[bench]]
+name = "ylong_tokio_rwlock"
+path = "benches/ylong_tokio_rwlock.rs"
+required-features = ["sync"]
+
+[[bench]]
+name = "ylong_tokio_tcp"
+path = "benches/ylong_tokio_tcp.rs"
+required-features = ["net"]
+
+[[bench]]
+name = "ylong_tokio_udp"
+path = "benches/ylong_tokio_udp.rs"
+required-features = ["net"]
+
+[[bench]]
+name = "ylong_tokio_uds"
+path = "benches/ylong_tokio_uds.rs"
+
+required-features = ["net"]
+
+[[bench]]
+name = "ylong_tokio_multi_threaded"
+path = "benches/ylong_tokio_multi_threaded.rs"
+required-features = ["net"]
+
+[[example]]
+name = "ylong_runtime_tcp_client_perf"
+path = "benches/bin/ylong_runtime_tcp_client_perf.rs"
+required-features = ["net", "multi_instance_runtime"]
+
+[[example]]
+name = "ylong_runtime_tcp_server_perf"
+path = "benches/bin/ylong_runtime_tcp_server_perf.rs"
+required-features = ["net", "multi_instance_runtime"]
+
+[[example]]
+name = "ylong_runtime_async_benchmark"
+path = "benches/bin/ylong_runtime_async_benchmark.rs"
+required-features = ["net", "multi_instance_runtime"]
+
+[[example]]
+name = "ylong_sync_mutex_perf"
+path = "benches/bin/ylong_sync_mutex_perf.rs"
+required-features = ["sync"]
+
+[[example]]
+name = "ylong_sync_rwlock_perf"
+path = "benches/bin/ylong_sync_rwlock_perf.rs"
+required-features = ["sync"]
+
+[[example]]
+name = "ylong_runtime_tcp"
+path = "./examples/ylong_runtime_tcp.rs"
+required-features = ["net"]
+
+[[example]]
+name = "ylong_runtime_signal"
+path = "./examples/ylong_runtime_signal.rs"
+required-features = ["signal"]
+
+[[example]]
+name = "ylong_runtime_multi_runtimes"
+path = "./examples/ylong_runtime_multi_runtimes.rs"
+required-features = ["multi_instance_runtime"]
+
+[[example]]
+name = "ylong_runtime_memory"
+path = "examples/ylong_runtime_memory.rs"
+required-features = ["multi_instance_runtime"]
+
+[[example]]
+name = "ylong_runtime_timer_sleep"
+path = "examples/ylong_runtime_timer_sleep.rs"
+required-features = ["time", "multi_instance_runtime"]
+
+[[example]]
+name = "ylong_runtime_timer_memory"
+path = "examples/ylong_runtime_timer_memory.rs"
+required-features = ["time", "multi_instance_runtime"]
+
+[[example]]
+name = "ylong_timer_latency"
+path = "examples/ylong_timer_latency.rs"
+required-features = ["time"]
+
+[[example]]
+name = "ylong_runtime_tcp_fd_limit"
+path = "examples/ylong_runtime_tcp_fd_limit.rs"
+required-features = ["net"]
+
+[[example]]
+name = "ylong_runtime_spawn_fail"
+path = "examples/ylong_runtime_spawn_fail.rs"
+required-features = ["time"]
+
+[[example]]
+name = "ylong_timer_out_of_context"
+path = "examples/ylong_timer_out_of_context.rs"
+required-features = ["time"]

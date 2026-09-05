@@ -1,0 +1,10 @@
+/target/
+/dist/
+.DS_Store
+*.log
+.env
+.env.*
+*.hap
+/.hap-resigner/
+/signing-materials/
+/vendor/hdc/host/target/
